@@ -1,4 +1,6 @@
 import pygame as pg
+import math
+from rocket import Rocket
 
 # initialize colors
 BLACK = (0, 0, 0)
@@ -95,7 +97,23 @@ class Button(object):
             if self.hover_font_color:
                 text = self.hover_text
         surface.fill(BLACK, self.rect)
-        surface.fill(color, self.rect)#.inflate(-4, -4))
+        surface.fill(color, self.rect)  # .inflate(-4, -4))
         if self.text:
             text_rect = text.get_rect(center=self.rect.center)
             surface.blit(text, text_rect)
+
+
+def drawRocket(surface, rocket):
+    point_1 = [int(rocket.location.x + math.sin(rocket.direction) * rocket.size),
+               int(rocket.location.y + math.cos(rocket.direction) * rocket.size)]
+    point_2 = [int(rocket.location.x + math.cos(rocket.direction) * rocket.size),
+               int(rocket.location.y - math.sin(rocket.direction) * rocket.size)]
+    point_3 = [int(rocket.location.x - math.sin(rocket.direction) * rocket.size),
+               int(rocket.location.y - math.cos(rocket.direction) * rocket.size)]
+    point_4 = [int(rocket.location.x - math.cos(rocket.direction) * rocket.size),
+               int(rocket.location.y + math.sin(rocket.direction) * rocket.size)]
+    if rocket.is_alive:
+        pg.draw.polygon(surface, WHITE, [point_1, point_2, point_3, point_4])
+        pg.draw.circle(surface, RED, point_4, 0.75*rocket.size)
+    else:
+        pg.draw.polygon(surface, BRIGHT_RED, [point_1, point_2, point_3, point_4])

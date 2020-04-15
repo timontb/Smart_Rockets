@@ -1,4 +1,5 @@
 import numpy as np
+import math
 from vector import Vector
 
 
@@ -8,13 +9,16 @@ class Rocket:
         self.location = Vector(300, 500)
         self.acceleration = Vector()
         self.velocity = Vector()
+        self.direction = 1.5707963267948966
+        self.size = 10
 
         # this flag is set to False after the rocket did collide with an obstacle
         self.is_alive = True
         self.has_landed = False
+        self.landed_at = life_time
 
         self.forces = []
-        self.length = life_time
+        self.life_time = life_time
 
         for i in range(0, life_time):
             self.forces.append(Vector.random())
@@ -36,6 +40,12 @@ class Rocket:
         # update the location of the rocket
         self.location += self.velocity
 
+        # update the direction of the rocket
+        norme = math.sqrt(self.velocity.x ** 2 + self.velocity.y ** 2)
+        cosAngle = self.velocity.x / norme
+        sinAngle = -self.velocity.y / norme
+        self.direction = math.acos(cosAngle) if math.asin(sinAngle) >= 0 else 2 * math.pi - math.acos(cosAngle)
+
         # the acceleration of the rocket is set to 0.0
         self.acceleration.nul()
 
@@ -50,18 +60,20 @@ class Rocket:
         # if a collision was detected with an obstacle, penalize the fitness value
         fitness_rate = 1.0
         if not self.is_alive:
-            fitness_rate = 0.0000000000000000001
+            fitness_rate = 0.000000000000000001
+        if self.has_landed:
+            fitness_rate = 10 * self.life_time/self.landed_at
 
         return inv_dist_to_target * fitness_rate
 
     # does the recombination between to elements of the population
     def crossover(self, other):
         # a new child is created
-        child = Rocket(self.length)
+        child = Rocket(self.life_time)
         # generate a random midpoint
-        midpoint = np.random.random_integers(1, other.length)
+        midpoint = np.random.random_integers(1, other.life_time)
 
-        for i in range(0, other.length):
+        for i in range(0, other.life_time):
             # do the recombination by taking force vectors from both elements
             if i < midpoint:
                 child.forces[i] = self.forces[i]
@@ -71,8 +83,7 @@ class Rocket:
 
     # mutates the current force vector according to the current mutation rate
     def mutate(self, mutation_rate):
-        for i in range(0, self.length):
+        for i in range(0, self.life_time):
             rand_value = np.random.rand()
             if rand_value < mutation_rate:
                 self.forces[i] = Vector.random()
-

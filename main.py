@@ -1,4 +1,3 @@
-import math
 from population import Population
 from obstacle import Obstacle
 from interface import *
@@ -19,6 +18,7 @@ height = 600
 title = "Smart Rockets"
 
 life_time = 120
+pop_size = 100
 obstacles = [(150, 250, 300, 50)]
 
 # initialize pygame
@@ -73,7 +73,7 @@ class Control:
         # iteration counter
         self.iter_cnt = 0
         # initialize population
-        self.population = Population(life_time=life_time)
+        self.population = Population(size=pop_size, life_time=life_time)
         self.game_loop_done = False
 
         while not self.game_loop_done:
@@ -90,6 +90,7 @@ class Control:
                 # compute the newer generation of the population
                 self.population.next_gen()
 
+            # flying_members = pop_size
             for member in self.population.members:
                 # check if rocket did not collide before
                 if member.is_alive and not member.has_landed:
@@ -109,9 +110,15 @@ class Control:
                     if (math.pow((member.location.x - 300), 2) + math.pow((member.location.y - 100), 2)) < math.pow(
                             20, 2):
                         member.has_landed = True
+                        member.landed_at = counter
+            #     else:
+            #         flying_members -= 1
+            #
+            # if flying_members == 0:
+            #     counter = life_time - 1
 
                 # display the rockets
-                pg.draw.circle(self.screen, WHITE, member.location.tuple_int(0), 5)
+                drawRocket(self.screen, member)
 
             # draw the obstacles
             for obs in self.obstacles:
