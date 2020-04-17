@@ -10,6 +10,7 @@ BRIGHT_RED = (255, 0, 0)
 GREEN = (0, 200, 0)
 BRIGHT_GREEN = (0, 255, 0)
 YELLOW = (255, 255, 0)
+ORANGE = (255, 128, 0)
 
 
 class Button(object):
@@ -114,6 +115,6 @@ def drawRocket(surface, rocket):
                int(rocket.location.y + math.sin(rocket.direction) * rocket.size)]
     if rocket.is_alive:
         pg.draw.polygon(surface, WHITE, [point_1, point_2, point_3, point_4])
-        pg.draw.circle(surface, RED, point_4, 0.75*rocket.size)
+        pg.draw.circle(surface, ORANGE, point_4, 0.75*rocket.size)
     else:
         pg.draw.polygon(surface, BRIGHT_RED, [point_1, point_2, point_3, point_4])

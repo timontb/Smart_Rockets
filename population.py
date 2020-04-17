@@ -5,18 +5,24 @@ from vector import Vector
 
 class Population:
 
-    def __init__(self, size=10, life_time=60, target=Vector(300, 100)):
+    def __init__(self, size=10, life_time=60, origin=None, target=None, prev_child=None):
+        if origin is None:
+            origin = [300, 500]
+        if target is None:
+            target = [300, 100]
+        self.origin = origin
+        self.prev_child = prev_child
         self.mutation_rate = 0.05
         self.average_fitness = 0
         self.highest_average_fitness = 1
         self.fitness_graph = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.size = size
         self.life_time = life_time
-        self.target = target
+        self.target = Vector(target[0], target[1])
         self.best_child = Rocket(self.life_time)
         self.members = []
         for member in range(0, self.size):
-            self.members.append(Rocket(self.life_time))
+            self.members.append(Rocket(self.life_time, origin=self.origin, prev_genes=self.prev_child))
 
     # start the main loop
     def next_gen(self):
@@ -61,6 +67,6 @@ class Population:
         else:
             new_generation = []
             for member in range(0, self.size):
-                new_generation.append(Rocket(self.life_time))
+                new_generation.append(Rocket(self.life_time, origin=self.origin, prev_genes=self.prev_child))
 
         self.members = new_generation
